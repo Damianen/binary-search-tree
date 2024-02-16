@@ -221,6 +221,203 @@ class Tree {
         }
     }
 
+    levelOrder(callback) {
+        let queue = [];
+        let arr = [];
+        queue.push(this.root);
+
+        while (queue.length != 0) {
+            let node = queue.shift();
+            arr.push(node);
+
+            if (callback != null) {
+                callback(node);
+            }
+
+            if (node.left != null) {
+                queue.push(node.left);
+            }
+
+            if (node.right != null) {
+                queue.push(node.right);
+            }
+        }
+
+        if (callback == null) {
+            return arr;
+        }
+    }
+
+    levelOrderRecursive(callback) {
+        let arr = [];
+        
+        let levelOrder = (node, level) => {
+            if (node = null) {
+                return;
+            }
+            if (level == 1) {
+                if (callback != null) {
+                    callback(node);
+                }
+                arr.push(node);
+            } else if (level > 1) {
+                levelOrder(node.left, level - 1);
+                levelOrder(node.right, level -1);
+            }
+        }
+
+        let height = this.height(root);
+        for (let i = 0; i <= height; i++) {
+            printCurrentLevel(root, i);
+        }
+
+        if (callback == null) {
+            return arr;
+        }
+    }
+
+    inOrder(callback) {
+        let arr = [];
+
+        let inOrderRecursion = (node) => {
+            if (node.left != null) {
+                inOrderRecursion(node.left);
+            }
+
+            if (callback != null) {
+                callback(node);
+            }
+
+            arr.push(node);
+
+            if (node.right != null) {
+                inOrderRecursion(node.right);
+            }
+        }
+
+        inOrderRecursion(this.root);
+
+        if (callback == null) {
+            return arr;
+        }
+    }
+
+    preOrder(callback) {
+        let arr = [];
+        let preOrderRecursion = (node) => {
+            if (callback != null) {
+                callback(node);
+            }
+
+            arr.push(node);
+            
+            if (node.left != null) {
+                preOrderRecursion(node.left);
+            }
+
+            if (node.right != null) {
+                preOrderRecursion(node.right);
+            }
+        }
+
+        preOrderRecursion(this.root);
+
+        if (callback == null) {
+            return arr;
+        }
+    }
+
+    postOrder(callback) {
+        let arr = [];
+        let postOrderRecursion = (node) => {            
+            
+            if (node.left != null) {
+                postOrderRecursion(node.left);
+            }
+
+            if (node.right != null) {
+                postOrderRecursion(node.right);
+            } 
+
+            if (callback != null) {
+                callback(node);
+            }
+
+            arr.push(node);
+        }
+
+        postOrderRecursion(this.root);
+
+        if (callback == null) {
+            return arr;
+        }
+    }
+
+    height(root) {
+        if (root == null) {
+            return 0;
+        } else {
+            let lHeight = this.height(root.left);
+            let rHeight = this.height(root.right);
+
+            if (lHeight > rHeight) {
+                return (lHeight + 1);
+            } else {
+                return (rHeight + 1);
+            }
+        }
+    }
+
+    depth (node) {
+        let length = 0;
+
+        let inOrderRecursion = (node) => {
+            if (node.left != null) {
+                inOrderRecursion(node.left);
+            }
+
+            if (node.right != null) {
+                inOrderRecursion(node.right);
+            }
+
+            length++;
+        }
+
+        inOrderRecursion(node);
+        return length;
+    }
+    
+    isBalanced() {
+        let checkNode = (node) => {
+            if (node.left != null) {
+                checkNode(node.left);
+            }
+
+            if (node.right != null) {
+                checkNode(node.right);
+            }
+
+            let difference = this.height(node.right) - this.height(node.left);
+
+            if (difference < -1 || difference > 1) {
+                return false;
+            }
+        }
+
+        checkNode(this.root);
+        return true;
+    }
+
+    rebalance() {
+        let nodeArr = this.postOrder();
+        let arr = [];
+        for (let i = 0; i < nodeArr.length; i++) {
+            arr.push(nodeArr[i].value);
+        }
+        arr = this.sortArray(arr);
+        this.root = this.buildTree(arr, 0, arr.length - 1);
+    }
+
     prettyPrint (node, prefix = "", isLeft = true) {
         if (node === null) {
             return;
@@ -236,5 +433,37 @@ class Tree {
     }
 }
 
-let tree = new Tree([10, 3, 3, 3, 3, 3, 4, 4, 6, 8, 2]);
+let arr = [];
+for (let i = 0; i < 20; i++) {
+    arr.push(Math.floor(Math.random() * 100 + 1))
+}
+
+let tree = new Tree(arr);
+
 tree.prettyPrint(tree.root);
+console.log(tree.isBalanced());
+console.log("\ninOrder:")
+tree.inOrder((node) => {console.log(node.value)});
+console.log("\nPostOrder:")
+tree.postOrder((node) => {console.log(node.value)});
+console.log("\npreOrder:")
+tree.preOrder((node) => {console.log(node.value)});
+console.log("\nlevelOrder:")
+tree.levelOrder((node) => {console.log(node.value)});
+
+for (let i = 0; i < 5; i++) {
+    tree.insert(Math.floor(Math.random() * 100 + 1));
+}
+
+tree.prettyPrint(tree.root);
+console.log(tree.isBalanced());
+tree.rebalance();
+tree.prettyPrint(tree.root);
+console.log("\ninOrder:")
+tree.inOrder((node) => {console.log(node.value)});
+console.log("\nPostOrder:")
+tree.postOrder((node) => {console.log(node.value)});
+console.log("\npreOrder:")
+tree.preOrder((node) => {console.log(node.value)});
+console.log("\nlevelOrder:")
+tree.levelOrder((node) => {console.log(node.value)});
